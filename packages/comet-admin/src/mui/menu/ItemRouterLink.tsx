@@ -8,6 +8,9 @@ interface IMenuItemRouterLinkProps {
     to: string;
 }
 
+/**
+ * @deprecated use `NavigationItemRouterLink` instead.
+ */
 export class MenuItemRouterLink extends React.Component<IMenuItemRouterLinkProps & IMenuItemProps & ListItemProps & LinkProps> {
     public render() {
         return (

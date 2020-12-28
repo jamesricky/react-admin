@@ -27,6 +27,9 @@ export const DefaultSecondaryAction: React.FC<ICollapsibleItemSecondaryActionPro
     return open ? <ArrowUpIcon /> : <ArrowDownIcon />;
 };
 
+/**
+ * @deprecated use `NavigationCollapsibleItem` instead.
+ */
 export const MenuCollapsibleItem: React.FunctionComponent<ICollapsibleItemProps & ListProps> = ({
     level,
     collapsible,

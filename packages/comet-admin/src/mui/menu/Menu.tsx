@@ -4,16 +4,18 @@ import * as React from "react";
 import { useHistory } from "react-router";
 import { ThemeContext } from "styled-components";
 
+import { useWindowSize } from "../../helpers";
 import { MenuContext } from "./Context";
 import * as sc from "./Menu.sc";
-// TODO after next publish: Replace with hook from `@vivid-planet/comet-admin`
-import useWindowSize from "./useWindowSize";
 
 interface IProps {
     children: React.ReactNode;
     permanentMenuMinWidth?: number;
 }
 
+/**
+ * @deprecated use `Navigation` instead.
+ */
 const Menu = ({ classes, children, permanentMenuMinWidth: passedPermanentMenuMinWidth, theme }: WithStyles<typeof styles, true> & IProps) => {
     const { open, toggleOpen } = React.useContext(MenuContext);
     const themeContext = React.useContext(ThemeContext);
@@ -85,6 +87,7 @@ const styles = (theme: Theme) => {
         toolbar: theme.mixins.toolbar,
     });
 };
+
 const ExtendedMenu = withStyles(styles, { withTheme: true })(Menu);
 
 export { ExtendedMenu as Menu };

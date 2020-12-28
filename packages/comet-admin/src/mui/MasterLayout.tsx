@@ -4,18 +4,19 @@ import { createStyles, WithStyles, withStyles } from "@material-ui/styles";
 import * as React from "react";
 
 import { Header } from "./MasterLayout.sc";
-import { MenuContext } from "./menu/Context";
+import { MenuContext } from "./menu";
 
 export interface IMasterLayoutProps extends WithStyles<typeof styles> {
     children: React.ReactNode;
     menuComponent: React.ComponentType;
     headerComponent?: React.ComponentType;
     hideToolbarMenuIcon?: boolean;
+    closeMenuInitially?: boolean;
 }
 
 function MasterLayout(props: IMasterLayoutProps) {
-    const { classes, children, menuComponent: Menu, headerComponent: HeaderComponent, hideToolbarMenuIcon } = props;
-    const [open, setOpen] = React.useState(true);
+    const { classes, children, menuComponent: Menu, headerComponent: HeaderComponent, hideToolbarMenuIcon, closeMenuInitially = false } = props;
+    const [open, setOpen] = React.useState(!closeMenuInitially);
 
     const toggleOpen = () => {
         setOpen(!open);

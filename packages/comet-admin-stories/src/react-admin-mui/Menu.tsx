@@ -36,4 +36,4 @@ const Story: React.FC = () => (
 
 storiesOf("comet-admin-mui", module)
     .addDecorator(StoryRouter())
-    .add("Menu", () => <Story />);
+    .add("Menu (legacy)", () => <Story />);
