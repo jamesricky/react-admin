@@ -11,7 +11,7 @@ const Story = () => {
     return (
         <IntlProvider messages={{}} locale="de">
             <Form onSubmit={() => {}} initialValues={initialValues}>
-                {() => (
+                {({ values }) => (
                     <form style={{ width: 350 }}>
                         <Field
                             name="time1"
@@ -37,6 +37,7 @@ const Story = () => {
                         />
                         <Field name="time5" disabled label="Time - disabled" component={FinalFormTimePicker} />
                         <Field name="time6" required label="Time - required" component={FinalFormTimePicker} />
+                        <pre>{JSON.stringify(values, null, 4)}</pre>
                     </form>
                 )}
             </Form>

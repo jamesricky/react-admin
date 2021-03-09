@@ -62,14 +62,10 @@ const Picker: React.FC<WithStyles<typeof styles> & TimePickerProps & FieldRender
     minuteStep = 15,
     fullWidth = false,
     showClearButton,
+                                                                                                                        inputProps,
     ...restProps
 }) => {
     const intl = useIntl();
-    const localeName = intl.locale;
-
-    React.useEffect(() => {
-        moment.locale(localeName);
-    }, [localeName]);
 
     const placeholderText = placeholder
         ? placeholder
@@ -142,6 +138,7 @@ const Picker: React.FC<WithStyles<typeof styles> & TimePickerProps & FieldRender
     };
 
     const onInputFocus = () => {
+        console.log('aaa', 'TimePicker', 'onInputFocus');
         setShowPopper(true);
         onFocus();
 
@@ -149,7 +146,7 @@ const Picker: React.FC<WithStyles<typeof styles> & TimePickerProps & FieldRender
         setTimeout(() => {
             if (paperRef.current && selectedOptionRef.current) {
                 // Scroll to selected option (with one option-space above)
-                paperRef.current.scrollTo({ top: selectedOptionRef.current.offsetTop - selectedOptionRef.current.clientHeight, behavior: "smooth" });
+                paperRef.current.scrollTo({ top: selectedOptionRef.current.offsetTop - selectedOptionRef.current.clientHeight });
             }
         }, 0);
     };
@@ -188,6 +185,7 @@ const Picker: React.FC<WithStyles<typeof styles> & TimePickerProps & FieldRender
                     onBlur={onInputBlur}
                     inputProps={{
                         autoComplete: "off",
+                        ...inputProps
                     }}
                     {...restProps}
                     {...restInput}

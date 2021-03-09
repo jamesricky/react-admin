@@ -2,19 +2,23 @@ import { Field } from "@comet/admin";
 import { DateRangePickerValue, FinalFormDateRangePicker } from "@comet/admin-date-time";
 import TodayIcon from "@material-ui/icons/Today";
 import { storiesOf } from "@storybook/react";
-import * as moment from "moment";
 import * as React from "react";
 import { Form } from "react-final-form";
 import { IntlProvider } from "react-intl";
 
 const Story = () => {
-    const range: DateRangePickerValue = { start: moment().add(2, "days").toDate(), end: moment().add(6, "days").toDate() };
+    const rangeStart = new Date();
+    const rangeEnd = new Date();
+    rangeStart.setDate(rangeStart.getDate() + 2);
+    rangeEnd.setDate(rangeEnd.getDate() + 6);
+
+    const range: DateRangePickerValue = { start: rangeStart, end: rangeEnd };
     const initialValues = { date2: range, date3: range, date4: range };
 
     return (
         <IntlProvider messages={{}} locale="de">
             <Form onSubmit={() => {}} initialValues={initialValues}>
-                {() => (
+                {({ values }) => (
                     <form style={{ width: 350 }}>
                         <Field name="date1" label="Date" component={FinalFormDateRangePicker} fullWidth />
                         <Field
@@ -33,6 +37,7 @@ const Story = () => {
                             startAdornment={<TodayIcon fontSize={"small"} />}
                         />
                         <Field name="date5" label="Date, disabled" disabled component={FinalFormDateRangePicker} />
+                        <pre>{JSON.stringify(values, null, 4)}</pre>
                     </form>
                 )}
             </Form>

@@ -10,7 +10,7 @@ import { DayPickerSingleDateController, DayPickerSingleDateControllerShape } fro
 import { FieldRenderProps } from "react-final-form";
 import { useIntl } from "react-intl";
 
-import { getDateControllerText } from "../utils/getDateControllerDate";
+import { getDateFromInputValue, getLocaleFormattedDate } from "../utils/helpers";
 import styles from "./DatePicker.styles";
 
 export interface DatePickerThemeProps extends InputBaseProps {
@@ -38,17 +38,15 @@ const Picker: React.FC<WithStyles<typeof styles> & DatePickerThemeProps & FieldR
         ? placeholder
         : intl.formatMessage({ id: "cometAdmin.dateTime.datePicker.placeholder", defaultMessage: "Date" });
 
-    React.useEffect(() => {
-        moment.locale(localeName);
-    }, [localeName]);
-
     const { value, onChange, onBlur, onFocus, ...restInput } = input;
+
     const rootRef = React.useRef(null);
     const [showPopper, setShowPopper] = React.useState<boolean>(false);
     const [showDayPicker, setShowDayPicker] = React.useState<boolean>(false);
-    const [customValue, setCustomValue] = React.useState<string | null>(null);
-    const formattedValue = moment(input.value).isValid() ? moment(input.value).format(localeDateFormat) : "";
-    const displayValue = customValue ? customValue : formattedValue;
+    const [currentUserInputValue, setCurrentUserInputValue] = React.useState<string | null>(null);
+
+    const inputValue: Date | null = getDateFromInputValue(value, localeDateFormat);
+    const formattedValue = getLocaleFormattedDate(inputValue, intl) ;
 
     const showPicker = () => {
         onFocus();
@@ -69,14 +67,14 @@ const Picker: React.FC<WithStyles<typeof styles> & DatePickerThemeProps & FieldR
         const newValue = e.currentTarget.value;
 
         if (newValue) {
-            const momentNewValue = moment(newValue, localeDateFormat);
+            const newDateValue = getDateFromInputValue(newValue, localeDateFormat);
 
-            if (momentNewValue.isValid()) {
-                onChange(momentNewValue.toDate());
-                setCustomValue(null);
+            if (newDateValue) {
+                onChange(newDateValue);
+                setCurrentUserInputValue(null);
             } else {
                 onChange(null);
-                setCustomValue(null);
+                setCurrentUserInputValue(null);
             }
         }
     };
@@ -84,10 +82,10 @@ const Picker: React.FC<WithStyles<typeof styles> & DatePickerThemeProps & FieldR
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.currentTarget.value;
         if (newValue) {
-            setCustomValue(newValue);
+            setCurrentUserInputValue(newValue);
         } else {
             onChange(null);
-            setCustomValue(null);
+            setCurrentUserInputValue(null);
         }
     };
 
@@ -105,10 +103,10 @@ const Picker: React.FC<WithStyles<typeof styles> & DatePickerThemeProps & FieldR
             <div ref={rootRef} className={rootClasses.join(" ")}>
                 <InputBase
                     classes={{ root: classes.inputBase }}
-                    endAdornment={showClearButton ? <ClearInputButton onClick={() => onChange(null)} disabled={!value} /> : undefined}
+                    endAdornment={showClearButton ? <ClearInputButton onClick={() => onChange(null)} disabled={!inputValue} /> : undefined}
                     disabled={disabled}
                     placeholder={placeholderText}
-                    value={displayValue}
+                    value={currentUserInputValue ? currentUserInputValue : formattedValue}
                     onFocus={showPicker}
                     onBlur={onInputBlur}
                     onChange={onInputChange}
@@ -131,7 +129,7 @@ const Picker: React.FC<WithStyles<typeof styles> & DatePickerThemeProps & FieldR
                         <Typography component={"div"}>
                             {showDayPicker && (
                                 <DayPickerSingleDateController
-                                    date={getDateControllerText(input.value)}
+                                    date={inputValue ? moment(inputValue) : null}
                                     onDateChange={onDateChange}
                                     initialVisibleMonth={null}
                                     onFocusChange={() => {}}

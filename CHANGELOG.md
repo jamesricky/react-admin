@@ -73,7 +73,7 @@ All notable changes to this project will be documented in this file. This projec
 
 Automatic migrations using codeshift are available (use -d for dry-run):
 
-```angular2html
+```
 npx jscodeshift --extensions=ts --parser=ts -t comet-admin/codemods/2.0.0/package-renames.ts src/
 npx jscodeshift --extensions=tsx --parser=tsx -t comet-admin/codemods/2.0.0/package-renames.ts src/
 ```
@@ -82,7 +82,7 @@ npx jscodeshift --extensions=tsx --parser=tsx -t comet-admin/codemods/2.0.0/pack
 
 Automatic migrations using codeshift are available (use -d for dry-run):
 
-```angular2html
+```
 npx jscodeshift --extensions=ts --parser=ts -t comet-admin/codemods/2.0.0/admin-date-time.ts src/
 npx jscodeshift --extensions=tsx --parser=tsx -t comet-admin/codemods/2.0.0/admin-date-time.ts src/
 ```

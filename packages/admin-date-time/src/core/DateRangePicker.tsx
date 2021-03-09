@@ -10,7 +10,7 @@ import { DayPickerRangeController, DayPickerRangeControllerShape } from "react-d
 import { FieldRenderProps } from "react-final-form";
 import { useIntl } from "react-intl";
 
-import { getDateControllerText } from "../utils/getDateControllerDate";
+import { getDateFromInputValue, getLocaleFormattedDate } from "../utils/helpers";
 import styles from "./DateRangePicker.styles";
 
 interface DateRange {
@@ -25,13 +25,6 @@ export interface DateRangePickerThemeProps extends InputBaseProps {
     showClearButton?: boolean;
     dateControllerProps?: DayPickerRangeController;
 }
-
-const getFormattedValue = (value: DateRangePickerValue, format: string): string => {
-    if (!value) return "";
-    const startValue = moment(value.start).isValid() ? moment(value.start).format(format) : "";
-    const endValue = moment(value.end).isValid() ? moment(value.end).format(format) : "";
-    return `${startValue} - ${endValue}`;
-};
 
 const Picker: React.FC<WithStyles<typeof styles> & DateRangePickerThemeProps & FieldRenderProps<DateRangePickerValue, HTMLInputElement>> = ({
     classes,
@@ -52,17 +45,18 @@ const Picker: React.FC<WithStyles<typeof styles> & DateRangePickerThemeProps & F
         ? placeholder
         : intl.formatMessage({ id: "cometAdmin.dateTime.dateRangePicker.placeholder", defaultMessage: "Date range" });
 
-    React.useEffect(() => {
-        moment.locale(localeName);
-    }, [localeName]);
-
     const { value, onChange, onBlur, onFocus, ...restInput } = input;
+
+    const inputStartDate = getDateFromInputValue(value?.start);
+    const inputEndDate = getDateFromInputValue(value?.end);
+    const formattedStartDate = getLocaleFormattedDate(value?.start, intl);
+    const formattedEndDate = getLocaleFormattedDate(value?.end, intl);
+
     const rootRef = React.useRef(null);
     const [showPopper, setShowPopper] = React.useState<boolean>(false);
     const [showDayPicker, setShowDayPicker] = React.useState<boolean>(false);
     const [customValue, setCustomValue] = React.useState<string | null>(null);
-    const formattedValue = getFormattedValue(input.value, localeDateFormat);
-    const displayValue = customValue ? customValue : formattedValue;
+    const formattedDateRange = formattedStartDate.length ? `${formattedStartDate} - ${formattedEndDate}` : '';
     const [focusedOnStartingDate, setFocusedOnStartingDate] = React.useState<boolean>(true);
 
     const showPicker = () => {
@@ -89,20 +83,12 @@ const Picker: React.FC<WithStyles<typeof styles> & DateRangePickerThemeProps & F
 
     const onInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         const newValue = e.currentTarget.value.split("-");
-        const newStartValue = newValue[0].trim();
-        const newEndValue = newValue[1] === undefined ? newStartValue : newValue[1].trim();
+        const newStartValueDate = getDateFromInputValue(newValue[0].trim(), localeDateFormat);
+        const newEndValueDate = newValue[1] === undefined ? newStartValueDate : getDateFromInputValue(newValue[1].trim(), localeDateFormat);
 
-        if (newStartValue && newEndValue) {
-            const momentNewStartValue = moment(newStartValue, localeDateFormat);
-            const momentNewEndValue = moment(newEndValue, localeDateFormat);
-
-            if (momentNewStartValue.isValid() && momentNewEndValue.isValid()) {
-                onChange({ start: momentNewStartValue.toDate(), end: momentNewEndValue.toDate() });
-                setCustomValue(null);
-            } else {
-                onChange(null);
-                setCustomValue(null);
-            }
+        if (newStartValueDate && newEndValueDate) {
+            onChange({ start: newStartValueDate, end: newEndValueDate });
+            setCustomValue(null);
         } else {
             onChange(null);
             setCustomValue(null);
@@ -119,9 +105,10 @@ const Picker: React.FC<WithStyles<typeof styles> & DateRangePickerThemeProps & F
         }
     };
 
+    // TODO: Fix for selecting end-date earlier than start-date
     const onDatesChange: DayPickerRangeControllerShape["onDatesChange"] = (range) => {
-        const newStartDate = range.startDate ? range.startDate.toDate() : null;
-        const newEndDate = focusedOnStartingDate ? null : range.endDate ? range.endDate.toDate() : null;
+        const newStartDate = getDateFromInputValue(range.startDate);
+        const newEndDate = focusedOnStartingDate ? null : getDateFromInputValue(range.endDate);
 
         if (!focusedOnStartingDate) hidePicker();
         setFocusedOnStartingDate(!focusedOnStartingDate);
@@ -145,7 +132,7 @@ const Picker: React.FC<WithStyles<typeof styles> & DateRangePickerThemeProps & F
                     endAdornment={showClearButton ? <ClearInputButton onClick={() => onChange(null)} disabled={!value} /> : undefined}
                     disabled={disabled}
                     placeholder={placeholderText}
-                    value={displayValue}
+                    value={customValue ? customValue : formattedDateRange}
                     onFocus={showPicker}
                     onBlur={onInputBlur}
                     onChange={onInputChange}
@@ -169,8 +156,8 @@ const Picker: React.FC<WithStyles<typeof styles> & DateRangePickerThemeProps & F
                         <Typography component={"div"}>
                             {showDayPicker && (
                                 <DayPickerRangeController
-                                    startDate={getDateControllerText(input.value?.start)}
-                                    endDate={getDateControllerText(input.value?.end)}
+                                    startDate={inputStartDate ? moment(inputStartDate) : null}
+                                    endDate={inputEndDate ? moment(inputEndDate) : null}
                                     onDatesChange={onDatesChange}
                                     initialVisibleMonth={null}
                                     onFocusChange={() => {}}
