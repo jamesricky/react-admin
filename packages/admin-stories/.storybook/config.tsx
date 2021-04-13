@@ -4,6 +4,9 @@ import "@comet/admin-color-picker/src/themeAugmentation";
 import * as React from "react";
 import { IntlProvider } from "react-intl";
 import { createMuiTheme, MuiThemeProvider as ThemeProvider } from "@comet/admin";
+import { Theme, useMediaQuery } from "@material-ui/core";
+import { getTheme } from "@comet/admin-theme";
+import styled, { createGlobalStyle } from "styled-components";
 
 const req = require.context("../src", true, /\.tsx$/);
 
@@ -52,10 +55,52 @@ addDecorator((story, context) => {
     );
 });
 
-addDecorator((story) => {
-    const theme = createMuiTheme({});
+const themeOptions = {
+    cometAuto: "Comet Auto (Default from OS)",
+    cometLight: "Comet Light",
+    cometDark: "Comet Dark",
+    none: "None (Default MUI-Theme)",
+};
 
-    return <ThemeProvider theme={theme}>{story()}</ThemeProvider>;
+const GlobalStyles = createGlobalStyle`
+    body {
+        margin: 0;
+    }
+`;
+
+const StoryWrapper = styled.div`
+    background-color: ${({ theme }) => (theme.palette.type === "dark" ? theme.palette.background.default : "#ffffff")};
+    padding: ${({ theme }) => theme.spacing(4)}px;
+    min-height: 100vh;
+    box-sizing: border-box;
+`;
+
+addDecorator((story) => {
+    const selectedTheme = select("Theme", Object.values(themeOptions), Object.values(themeOptions)[0]);
+    const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+
+    const usedTheme = React.useMemo(() => {
+        let theme = createMuiTheme({});
+
+        if (selectedTheme === themeOptions["cometLight"]) {
+            theme = getTheme(false);
+        } else if (selectedTheme === themeOptions["cometDark"]) {
+            theme = getTheme(true);
+        } else if (selectedTheme === themeOptions["cometAuto"]) {
+            theme = getTheme(prefersDarkMode);
+        }
+
+        return theme;
+    }, [prefersDarkMode, selectedTheme]);
+
+    return (
+        <>
+            <GlobalStyles />
+            <ThemeProvider theme={usedTheme}>
+                <StoryWrapper>{story()}</StoryWrapper>
+            </ThemeProvider>
+        </>
+    );
 });
 
 configure(loadStories, module);
