@@ -34,6 +34,7 @@ All notable changes to this project will be documented in this file. This projec
 -   `createMuiTheme` has been removed from `@comet/admin` in favour of `createMuiTheme` from `@material-ui/core`
 -   Replaced form/Input (`VPAdminInputBase`) with form/InputBase (`CometAdminInputBase`)
     -   Deprecated `getDefaultVPAdminInputStyles` because the styled are included in InputBase, which should be used for all custom inputs in Comet
+-   Replaced `@comet/admin-date-picker` with `@comet/admin-date-time`
 -   Usage and default layout of `Field` has changed
     -   The `fieldContainer` prop has been removed, in favour of the `variant` prop and theme-augmentation of `CometAdminFormFieldContainer`
     -   Removed `FieldContainerLabelAbove` component (the new default looks like this)
@@ -150,6 +151,25 @@ Automatic migrations using codeshift are available (use -d for dry-run):
 npx jscodeshift --extensions=ts --parser=ts -t comet-admin/codemods/2.0.0/update-theme.ts src/
 npx jscodeshift --extensions=tsx --parser=tsx -t comet-admin/codemods/2.0.0/update-theme.ts src/
 ```
+
+**Package Renaming**
+
+Automatic migrations using codeshift are available (use -d for dry-run):
+
+```angular2html
+npx jscodeshift --extensions=ts --parser=ts -t comet-admin/codemods/2.0.0/package-renames.ts src/
+npx jscodeshift --extensions=tsx --parser=tsx -t comet-admin/codemods/2.0.0/package-renames.ts src/
+```
+
+**Admin-Date-Time Prop Renaming**
+
+Automatic migrations using codeshift are available (use -d for dry-run):
+
+```angular2html
+npx jscodeshift --extensions=ts --parser=ts -t comet-admin/codemods/2.0.0/admin-date-time.ts src/
+npx jscodeshift --extensions=tsx --parser=tsx -t comet-admin/codemods/2.0.0/admin-date-time.ts src/
+```
+
 
 ## @comet/admin-color-picker
 
