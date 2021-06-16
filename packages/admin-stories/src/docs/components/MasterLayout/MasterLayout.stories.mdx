@@ -1,0 +1,24 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Docs/Components/MasterLayout" />
+
+# MasterLayout
+
+The `MasterLayout` is the root of the content for your application. In addition, it contains the applications header and menu.
+
+_**Note:**_ `MasterLayout` can only be used inside `RouterBrowserRouter`.
+
+<Canvas>
+    <Story id="stories-components-masterlayout-masterlayout--masterlayout" />
+</Canvas>
+
+
+#### Props TODO
+
+| Name              | Type          | Default value                                | Description                                                                                                                                             |
+|:----------------- |:------------- |:-------------------------------------------- |:------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| children*         | node          |                                              | The content of the application.                                                                                                                         |
+| menuComponent*    | ComponentType |                                              | The global menu component, usually built using [`Menu`](/story/docs-components-menu--page).                                                             |
+| headerComponent   | ComponentType | Empty `AppHeader` with `AppHeaderMenuButton` | The global header component, usually built using [`AppHeader`](/story/docs-components-appheader--page).                                                 |
+| openMenuByDefault | boolean       | true                                         | Set, if the menu should be opened or closed by default.                                                                                                 |
+| headerHeight      | boolean       | 60                                           | Sets the height of the header. The height is passed into `AppHeader` and `Toolbar` for additional styling and the content is moved down by that amount. |
